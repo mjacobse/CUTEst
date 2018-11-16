@@ -87,6 +87,7 @@ typedef struct VarTypes {
 #define CUTEST_uvartype   FUNDERSCORE(cutest_uvartype)
 #define CUTEST_unames     FUNDERSCORE(cutest_unames)
 #define CUTEST_ureport    FUNDERSCORE(cutest_ureport)
+#define CUTEST_uresult    FUNDERSCORE(cutest_uresult)
 
 #define CUTEST_cdimen     FUNDERSCORE(cutest_cdimen)
 #define CUTEST_cdimsj     FUNDERSCORE(cutest_cdimsj)
@@ -97,6 +98,7 @@ typedef struct VarTypes {
 #define CUTEST_cvartype   FUNDERSCORE(cutest_cvartype)
 #define CUTEST_cnames     FUNDERSCORE(cutest_cnames)
 #define CUTEST_creport    FUNDERSCORE(cutest_creport)
+#define CUTEST_cresult    FUNDERSCORE(cutest_cresult)
 
 #define CUTEST_connames   FUNDERSCORE(cutest_connames)
 #define CUTEST_pname      FUNDERSCORE(cutest_pname)
@@ -182,6 +184,9 @@ void CUTEST_uvartype( integer *status, const integer *n, integer *ivarty );
 void CUTEST_unames  ( integer *status, const integer *n, char *pname,
                       char *vnames );
 void CUTEST_ureport ( integer *status, doublereal *calls, doublereal *time );
+void CUTEST_uresult ( integer *status, const integer *funit, const integer *n,
+                      const doublereal *X, const doublereal *X_l,
+                      const doublereal *X_u );
 
 /* Constrained dimensioning and report routines */
 void CUTEST_cdimen  ( integer *status, const integer *funit, integer *n,
@@ -199,6 +204,11 @@ void CUTEST_cvartype( integer *status, const integer *n, integer *ivarty );
 void CUTEST_cnames  ( integer *status, const integer *n, const integer *m,
                       char *pname, char *vnames, char *gnames );
 void CUTEST_creport ( integer *status, doublereal *calls, doublereal *time );
+void CUTEST_cresult ( integer *status, const integer *funit, const integer *n,
+                      const integer *m, const doublereal *X,
+                      const doublereal *X_l, const doublereal *X_u,
+                      const doublereal *Y, const doublereal *C_l,
+                      const doublereal *C_u );
 
 void CUTEST_connames( integer *status, const integer *m, char *gname );
 void CUTEST_pname   ( integer *status, const integer *funit, char *pname );

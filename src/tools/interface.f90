@@ -201,6 +201,13 @@
        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2 ) :: CPU
        END SUBROUTINE CUTEST_ureport
 
+       SUBROUTINE CUTEST_uresult( cutest_status, output, n, X, X_l, X_u )
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: cutest_status
+       INTEGER, INTENT( IN ) :: output, n
+       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u
+       END SUBROUTINE CUTEST_uresult
+
        SUBROUTINE CUTEST_uterminate( cutest_status )
        INTEGER, INTENT( OUT ) :: cutest_status
        END SUBROUTINE CUTEST_uterminate
@@ -621,6 +628,15 @@
        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 7 ) :: CALLS
        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2 ) :: CPU
        END SUBROUTINE CUTEST_creport
+
+       SUBROUTINE CUTEST_cresult( cutest_status, output, &
+                                  n, m, X, X_l, X_u, Y, C_l, C_u )
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: cutest_status
+       INTEGER, INTENT( IN ) :: output, n, m
+       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u
+       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y, C_l, C_u
+       END SUBROUTINE CUTEST_cresult
 
        SUBROUTINE CUTEST_cstats( cutest_status, nonlinear_variables_objective, &
                                  nonlinear_variables_constraints,              &

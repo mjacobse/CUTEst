@@ -25,7 +25,8 @@
                 CUTEST_hessian_times_vector, CUTEST_hessian_times_sp_vector,   &
                 CUTEST_extend_array,                                           &
                 CUTEST_allocate_array, CUTEST_initialize_thread,               &
-                CUTEST_terminate_data, CUTEST_terminate_work
+                CUTEST_terminate_data, CUTEST_terminate_work,                  &
+                CUTEST_box_multipliers
 
 !--------------------
 !   P r e c i s i o n
@@ -4188,6 +4189,46 @@
 !  end of subroutine CUTEST_terminate_work
 
      END SUBROUTINE CUTEST_terminate_work
+
+!-*-*-   C U T E S T _ b o x _ m u l t i p l i e r s   F U N C T I O N   -*-*-
+
+     FUNCTION CUTEST_box_multipliers( X, X_l, X_u, Dl ) RESULT( mults )
+
+!  dummy arguments
+
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( SIZE( X ) ) :: X_l, X_u, Dl
+     REAL ( KIND = wp ), DIMENSION( SIZE( X ) ) :: mults
+
+!  local variables
+
+     INTEGER :: i
+
+     DO i = 1, SIZE( X )
+       IF ( X_u( i ) == X_l( i ) ) THEN
+         mults( i ) = -Dl( i )
+         CYCLE
+       END IF
+       IF ( ABS( X_u( i ) - X( i ) ) < ABS( X( i ) - X_l( i ) ) ) THEN
+         IF ( Dl( i ) > 0.0_wp ) THEN
+           mults( i ) = MAX( -Dl( i ) / 2.0_wp,                                &
+                             -Dl( i ) / ( ABS( X_u( i ) - X( i ) ) + 1.0_wp ) )
+         ELSE
+           mults( i ) = -Dl( i ) / ( ABS( X_u( i ) - X( i ) ) + 1.0_wp )
+         END IF
+       ELSE
+         IF ( Dl( i ) < 0.0_wp ) THEN
+           mults( i ) = MIN( -Dl( i ) / 2.0_wp,                                &
+                             -Dl( i ) / ( ABS( X( i ) - X_l( i ) ) + 1.0_wp ) )
+         ELSE
+           mults( i ) = -Dl( i ) / ( ABS( X( i ) - X_l( i ) ) + 1.0_wp )
+         END IF
+       END IF
+     END DO
+
+!  end of subroutine CUTEST_box_multipliers
+
+     END FUNCTION CUTEST_box_multipliers
 
 !  end of module CUTEST
 
