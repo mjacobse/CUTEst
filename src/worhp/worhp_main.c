@@ -40,7 +40,7 @@ void UserDF_DG(OptVar *opt, Workspace *wsp, Params *par, Control *cnt,
 /* Hessian of Lagrangian */
 void UserHM(OptVar *opt, Workspace *wsp, Params *par, Control *cnt,
             doublereal *h_val, integer *h_row, integer *h_col,
-            integer hm_nnz, integer hm_nnz_init, integer *hm_perm_inverse);
+            integer hm_nnz, integer hm_nnz_init);
 
 
 int MAINENTRY() {
@@ -80,7 +80,6 @@ int MAINENTRY() {
     integer *g_var = NULL;
 
     integer hm_nnz, hm_nnz_init;
-    integer *hm_perm_inverse;
     bool *is_diag_entry_present;
     integer num_missing_diagonal;
     integer i_diagonal;
@@ -315,11 +314,6 @@ int MAINENTRY() {
         free(is_diag_entry_present);
         /* Tell Worhp to sort the hessian */
         SortWorhpMatrix(&wsp.HM);
-        /* Create inverse permutation */
-        hm_perm_inverse = malloc(wsp.HM.dim_perm * sizeof(hm_perm_inverse[0]));
-        for (i = 0; i < wsp.HM.dim_perm; i += 1) {
-            hm_perm_inverse[wsp.HM.perm[i] - 1] = i;
-        }
     }
 
     /* X, Mu and bounds are initialised by CUTEst setup */
@@ -387,7 +381,7 @@ int MAINENTRY() {
 
         if (GetUserAction(&cnt, evalHM)) {
             UserHM(&opt, &wsp, &par, &cnt, h_val, h_row, h_col,
-                   hm_nnz, hm_nnz_init, hm_perm_inverse);
+                   hm_nnz, hm_nnz_init);
             neval_HM += 1;
             DoneUserAction(&cnt, evalHM);
         }
@@ -439,7 +433,6 @@ int MAINENTRY() {
         FREE(h_val);
         FREE(h_row);
         FREE(h_col);
-        free(hm_perm_inverse);
     }
     if (opt.m > 0) {
         FREE(equatn);
@@ -604,15 +597,11 @@ void UserDF_DG(OptVar *opt, Workspace *wsp, Params *par, Control *cnt,
 
 void UserHM(OptVar *opt, Workspace *wsp, Params *par, Control *cnt,
             doublereal *h_val, integer *h_row, integer *h_col,
-            integer hm_nnz, integer hm_nnz_init, integer *hm_perm_inverse) {
+            integer hm_nnz, integer hm_nnz_init) {
     const integer objective_part = 0;
     const integer cutest_m = opt->m;
     integer cutest_status;
     int i;
-
-    /* reset everything to zero cause we cannot be sure that the zeros on the */
-    /* diagonal are still zero, cause worhp regularizes the hessian */
-    memset(wsp->HM.val, 0, wsp->HM.nnz * sizeof(wsp->HM.val[0]));
 
     /* Evaluate F-Part of hessian of the lagrangian */
     if (opt->m > 0) {
@@ -623,20 +612,30 @@ void UserHM(OptVar *opt, Workspace *wsp, Params *par, Control *cnt,
                    h_val, h_col, h_row);
     }
 
-    for (i = 0; i < hm_nnz; i += 1) {
-        assert(wsp->HM.row[hm_perm_inverse[i]] == h_row[i]);
-        assert(wsp->HM.col[hm_perm_inverse[i]] == h_col[i]);
-        wsp->HM.val[hm_perm_inverse[i]] = wsp->ScaleObj * h_val[i];
+    for (i = 0; i < wsp->HM.nnz; i += 1) {
+        if (wsp->HM.perm[i] > hm_nnz) {
+            /* zero diagonal entry, only to obey WORHP's structure */
+            wsp->HM.val[i] = 0.0;
+            continue;
+        }
+        assert(wsp->HM.row[i] == h_row[wsp->HM.perm[i] - 1]);
+        assert(wsp->HM.col[i] == h_col[wsp->HM.perm[i] - 1]);
+        wsp->HM.val[i] = wsp->ScaleObj * h_val[wsp->HM.perm[i] - 1];
     }
 
     if (opt->m > 0) {
         /* Evaluate G-Part of hessian of the lagrangian */
         CUTEST_cshc(&cutest_status, &opt->n, &cutest_m, opt->X, opt->Mu,
                     &hm_nnz, &hm_nnz_init, h_val, h_col, h_row);
-        for (i = 0; i < hm_nnz; i += 1) {
-            assert(wsp->HM.row[hm_perm_inverse[i]] == h_row[i]);
-            assert(wsp->HM.col[hm_perm_inverse[i]] == h_col[i]);
-            wsp->HM.val[hm_perm_inverse[i]] += h_val[i];
+        for (i = 0; i < wsp->HM.nnz; i += 1) {
+            if (wsp->HM.perm[i] > hm_nnz) {
+                /* zero diagonal entry, only to obey WORHP's structure */
+                wsp->HM.val[i] = 0.0;
+                continue;
+            }
+            assert(wsp->HM.row[i] == h_row[wsp->HM.perm[i] - 1]);
+            assert(wsp->HM.col[i] == h_col[wsp->HM.perm[i] - 1]);
+            wsp->HM.val[i] += h_val[wsp->HM.perm[i] - 1];
         }
     }
 }
