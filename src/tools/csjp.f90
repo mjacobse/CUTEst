@@ -22,7 +22,7 @@
 !  compute the spasity pattern of the Jacobian matrix of gradients of
 !  the general constraints of a group partially separable function.
 
-!  The Jacobianis stored as a sparse matrix in coordinate form.
+!  The Jacobian is stored as a sparse matrix in coordinate form.
 !  The i-th entry of this matrix represents the derivative of constraint
 !  J_con(i) with respect to variable J_var(i) for  i = 1,...,nnzj
 !  ----------------------------------------------------------------------
@@ -72,7 +72,7 @@
       INTEGER :: i, j, ig, ig1, icon, alloc_status
       INTEGER :: nin, nvarel, istrgv
       CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
-      REAL ( KIND = wp ) :: time_in, time_out
+      REAL :: time_in, time_out
 
       IF ( work%record_times ) CALL CPU_TIME( time_in )
 
