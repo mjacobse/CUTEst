@@ -12,15 +12,22 @@
 
 !  local variables
 
-      REAL :: time_now
+      INTEGER ( KIND = 8 ) :: sysclock_count, sysclock_count_rate
+      REAL :: time_now, time_user
+      REAL ( KIND = wp ) :: time_real
       REAL ( KIND = wp ) :: f, box_complementarity, box_dual_feasibility
       REAL ( KIND = wp ), DIMENSION( n ) :: Dl, Z
       REAL ( KIND = wp ) :: nc2of, nc2og, nc2oh, nhvpr
       CHARACTER ( LEN=21 ), PARAMETER :: fmt = "(A, SS, ES25.17E3, A)"
 
       CALL CPU_TIME( time_now )
+      CALL SYSTEM_CLOCK( sysclock_count, sysclock_count_rate )
+      time_user = time_now - CUTEST_data_global%sttime
+      time_real = (sysclock_count - CUTEST_data_global%sttime_sysclock_count) /&
+                  (1.0_wp * sysclock_count_rate)
       WRITE( output, "(A)" ) "{"
-      WRITE( output, fmt ) '"time":', time_now - CUTEST_data_global%sttime, ","
+      WRITE( output, fmt ) '"time_user":', time_user, ","
+      WRITE( output, fmt ) '"time_real":', time_real, ","
 
       nc2of = 0.0_wp
       nc2og = 0.0_wp

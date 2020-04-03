@@ -642,6 +642,7 @@
 
       CALL CPU_TIME( data%sttime )
       data%sutime = data%sttime - data%sutime
+      CALL SYSTEM_CLOCK( data%sttime_sysclock_count )
 
       status = 0
       RETURN

@@ -92,6 +92,7 @@
         INTEGER :: lfxi, lgxi, lhxi, lggfx, ldx, lgrjac, lnguvl, lnhuvl
         INTEGER :: meq, mlin, nnov, nnjv, numvar, numcon, threads
         REAL :: sutime, sttime
+        INTEGER ( KIND = 8 ) :: sttime_sysclock_count
         LOGICAL :: alllin, altriv
         CHARACTER ( LEN = 10 ) :: pname
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISTADG
