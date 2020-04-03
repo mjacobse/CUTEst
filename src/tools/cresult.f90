@@ -14,7 +14,7 @@
 
 !  local variables
 
-      REAL ( KIND = wp ) :: time_now
+      REAL :: time_now
       REAL ( KIND = wp ) :: f, l, box_complementarity, box_dual_feasibility,   &
                             general_complementarity, general_dual_feasibility
       REAL ( KIND = wp ), DIMENSION( m ) :: C

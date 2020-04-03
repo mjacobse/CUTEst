@@ -12,7 +12,7 @@
 
 !  local variables
 
-      REAL ( KIND = wp ) :: time_now
+      REAL :: time_now
       REAL ( KIND = wp ) :: f, box_complementarity, box_dual_feasibility
       REAL ( KIND = wp ), DIMENSION( n ) :: Dl, Z
       REAL ( KIND = wp ) :: nc2of, nc2og, nc2oh, nhvpr
